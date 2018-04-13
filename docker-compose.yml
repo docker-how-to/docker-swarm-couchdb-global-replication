@@ -1,0 +1,30 @@
+version: "3.2"
+
+networks:
+  couchdb:
+  
+services:
+  
+  couchdb:
+    image: redgeoff/couchdb-service
+    networks:
+      - couchdb
+    ports:
+      - 5984:5984
+    volumes:
+      - type: bind
+        source: /mnt/couchdb
+        target: /common/data/{{.Service.Name}}{{.Task.Slot}}
+    environment:
+      - COUCHDB_COOKIE=mycookie
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=admin
+      - COUCHDB_HASHED_PASSWORD=-pbkdf2-95837e9d8f37785a389954b4d6b3fd8d0f5dfc4b,bc73de1fd77a4f0c46879657e0577986,10
+      - COUCHDB_SECRET=mysecret
+      - NODENAME=couchdb{{.Task.Slot}}
+      - SERVICE_NAME={{.Service.Name}}
+      - TASK_SLOT={{.Task.Slot}}
+      - COUCHDB_DATA_DIR=/common/data/{{.Service.Name}}{{.Task.Slot}}
+    hostname: "couchdb{{.Task.Slot}}"
+    deploy:
+      mode: global
